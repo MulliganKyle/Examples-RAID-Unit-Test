@@ -2,8 +2,27 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "raidlib.h"
+
+
+
+
+//
+// open the files used for RAID
+//
+void openFiles(int fd[])
+{
+   fd[0]= open("raidFileInput.bin", O_RDWR | O_CREAT, 00644);
+   fd[1]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644);
+   fd[2]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644);
+   fd[3]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644);
+   fd[4]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644);
+   fd[5]= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644);
+   fd[6]= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644);
+}
 
 
 // RAID-5 encoding

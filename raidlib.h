@@ -8,6 +8,8 @@
 
 #define SECTOR_SIZE (512)
 
+void openFiles(int fd[]);
+
 void xorLBA(unsigned char *LBA1,
 	    unsigned char *LBA2,
 	    unsigned char *LBA3,
