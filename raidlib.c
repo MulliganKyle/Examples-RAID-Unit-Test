@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <assert.h>
+
 
 #include "raidlib.h"
 
@@ -22,7 +24,141 @@ void openFiles(int fd[])
    fd[4]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644);
    fd[5]= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644);
    fd[6]= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644);
+   fd[7]= open("raidFileReconstruct.bin", O_RDWR | O_CREAT, 00644);
 }
+
+//
+//close the files used for RAID
+//
+void closeFiles(int fd[])
+{
+   int idx;
+   for(idx=0; idx<8;idx++) close(fd[idx]);
+}
+
+
+
+
+//
+//read the input file and stripe across 4 files
+//
+void readInput(unsigned char file1Buff[],
+	       unsigned char file2Buff[],
+	       unsigned char file3Buff[],
+      	       unsigned char file4Buff[],
+	       int fd[])
+{
+   int readAmmount;
+//
+//read one sector at a time from the input file into buffers
+//
+
+   readAmmount=read(fd[0], &file1Buff, SECTOR_SIZE);
+   //assert(readAmmount == SECTOR_SIZE);
+   
+   readAmmount=read(fd[0], &file2Buff, SECTOR_SIZE);
+   //assert(readAmmount == SECTOR_SIZE);
+   
+   readAmmount=read(fd[0], &file3Buff, SECTOR_SIZE);
+   //assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[0], &file4Buff, SECTOR_SIZE);
+   //assert(readAmmount == SECTOR_SIZE);
+}
+
+void stripeRaidFiles(unsigned char *file1Buff,
+		     unsigned char *file2Buff,
+		     unsigned char *file3Buff,
+		     unsigned char *file4Buff,
+		     int fd[])
+{
+//
+//write the buffers to the files 1 thru 4
+//
+
+   int writeAmmount;
+
+   writeAmmount=write(fd[1], &file1Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+
+   writeAmmount=write(fd[2], &file2Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+   
+   writeAmmount=write(fd[3], &file3Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+   
+   writeAmmount=write(fd[4], &file4Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+}
+
+//
+//write to the XOR file
+//
+void writeXOR(unsigned char *fileXORBuff,int fd[])
+{
+   int writeAmmount;
+
+   writeAmmount=write(fd[5], &fileXORBuff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+
+}
+
+
+//
+//read from the raid files and the XOR file
+//
+void readRaidFiles(unsigned char *file1Buff,
+		   unsigned char *file2Buff,
+		   unsigned char *file3Buff,
+		   unsigned char *file4Buff,
+		   unsigned char *fileXORBuff,
+		   int fd[])
+{
+
+   int readAmmount;
+
+   readAmmount=read(fd[1], &file1Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[2], &file2Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[3], &file3Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[4], &file4Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[5], &fileXORBuff, SECTOR_SIZE);
+//   assert(readAmmount == SECTOR_SIZE);
+}	   
+
+void writeOutputFile(unsigned char *file1Buff,
+                     unsigned char *file2Buff,
+                     unsigned char *file3Buff,
+                     unsigned char *file4Buff,
+		     int fd[])
+{
+   int writeAmmount;
+
+   writeAmmount=write(fd[6], &file1Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+
+   writeAmmount=write(fd[6], &file2Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+
+   writeAmmount=write(fd[6], &file3Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+
+   writeAmmount=write(fd[6], &file4Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
+
+}
+
+
+
+
+
 
 
 // RAID-5 encoding

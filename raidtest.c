@@ -63,11 +63,18 @@ void dumpBuffer(unsigned char *bufferToDump)
 
 int main(int argc, char *argv[])
 {
-	int idx, LBAidx, numTestIterations, rc;
+	int idx, LBAidx, numTestIterations, rc, fd[7];
 	double rate=0.0;
 	double totalRate=0.0, aveRate=0.0;
 	struct timeval StartTime, StopTime;
 	unsigned int microsecs;
+int readAmmount;
+	unsigned char file1Buff[SECTOR_SIZE];
+	unsigned char file2Buff[SECTOR_SIZE];
+	unsigned char file3Buff[SECTOR_SIZE];
+	unsigned char file4Buff[SECTOR_SIZE];
+	unsigned char fileXORBuff[SECTOR_SIZE];
+        unsigned char file4Rebuild[SECTOR_SIZE];
 
 
         if(argc < 2)
@@ -92,7 +99,7 @@ int main(int argc, char *argv[])
             memcpy(&testRebuild[idx], NULL_RAID_STRING, SECTOR_SIZE);
         }
             
-
+#if 0
         // TEST CASE #0
         //
         printf("Architecture validation:\n");
@@ -111,10 +118,10 @@ int main(int argc, char *argv[])
 	           PTR_CAST &testLBA3[0],
 	           PTR_CAST &testPLBA[0],
 	           PTR_CAST &testRebuild[0]);
-
+printf("position 1\n");
         printBuffer((char *)&testLBA4[0]);
         getchar();
-
+printf("position 2\n");
         printBuffer((char *)&testRebuild[0]);
         getchar();
 
@@ -208,5 +215,124 @@ int main(int argc, char *argv[])
 
         //
         // END TEST CASE #2
+#endif
+      
+
+
+
+
+
+
+      //TEST CASE #3
+      //
+      //CREATE AND USE FILES FOR RAID
+      //
+
+      openFiles(fd);
+
+
+
+
+
+
+
+   readAmmount=read(fd[0], &file1Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[0], &file2Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[0], &file3Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[0], &file4Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+                  
+
+#if 1
+//      readInput(file1Buff,
+//	        file2Buff,
+//		file3Buff,
+//		file4Buff,
+//		fd);
+
+      stripeRaidFiles(file1Buff,
+                      file2Buff,
+                      file3Buff,
+                      file4Buff,
+                      fd);
+
+
+      closeFiles(fd);
+      //END TEST CASE #3
+      //
+      //
+
+
+
+      //
+      //TEST CASE #4
+      //
+      openFiles(fd);
+
+
+   readAmmount=read(fd[1], &file1Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[2], &file2Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[3], &file3Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[4], &file4Buff, SECTOR_SIZE);
+   assert(readAmmount == SECTOR_SIZE);
+
+   readAmmount=read(fd[5], &fileXORBuff, SECTOR_SIZE);
+   //assert(readAmmount == SECTOR_SIZE);
+
+
+   xorLBA(file1Buff,
+	  file2Buff,
+	  file3Buff,
+	  file4Buff,
+	  fileXORBuff);
+
+   writeXOR(fileXORBuff, fd);
+
+   rebuildLBA(file1Buff,
+	      file2Buff,
+	      file3Buff,
+	      fileXORBuff,
+	      file4Rebuild);
+
+   write(fd[4], &file4Rebuild, SECTOR_SIZE);
+
+
+//      readRaidFiles(file1Buff,
+//                    file2Buff,
+//                    file3Buff,
+//                    file4Buff,
+//		    fileXORBuff,
+//                    fd);
+
+
+                    
+      writeOutputFile(file1Buff,
+                      file2Buff,
+                      file3Buff,
+                      file4Buff,
+                      fd);
+      closeFiles(fd);
+      //
+      //END TEST CASE #4
+      //
+
+#endif
+
+
+
+
+
 
 }

@@ -10,6 +10,41 @@
 
 void openFiles(int fd[]);
 
+void closeFiles(int fd[]);
+
+void readInput(unsigned char *file1Buff,
+               unsigned char *file2Buff,
+               unsigned char *file3Buff,
+               unsigned char *file4Buff,
+               int fd[]);
+
+
+void stripeRaidFiles(unsigned char *file1Buff,
+                     unsigned char *file2Buff,
+                     unsigned char *file3Buff,
+                     unsigned char *file4Buff,
+                     int fd[]);
+
+void writeXOR(unsigned char *fileXORBuff,int fd[]);
+
+
+void readRaidFiles(unsigned char *file1Buff,
+                   unsigned char *file2Buff,
+                   unsigned char *file3Buff,
+                   unsigned char *file4Buff,
+                   unsigned char *fileXORBuff,
+                   int fd[]);
+
+void writeOutputFile(unsigned char *file1Buff,
+                     unsigned char *file2Buff,
+                     unsigned char *file3Buff,
+                     unsigned char *file4Buff,
+                     int fd[]);
+
+
+
+
+
 void xorLBA(unsigned char *LBA1,
 	    unsigned char *LBA2,
 	    unsigned char *LBA3,
