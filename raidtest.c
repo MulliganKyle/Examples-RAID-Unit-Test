@@ -20,11 +20,22 @@
 
 #define NULL_RAID_STRING "#FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF#"
 
+
+
 static unsigned char testRebuild[MAX_LBAS][SECTOR_SIZE];
 static unsigned char testLBA1[MAX_LBAS][SECTOR_SIZE];
 static unsigned char testLBA2[MAX_LBAS][SECTOR_SIZE];
 static unsigned char testLBA3[MAX_LBAS][SECTOR_SIZE];
 static unsigned char testLBA4[MAX_LBAS][SECTOR_SIZE];
+
+#if 0
+static unsigned char file1Buff[SECTOR_SIZE];
+static unsigned char file2Buff[SECTOR_SIZE];
+static unsigned char file3Buff[SECTOR_SIZE];
+static unsigned char file4Buff[SECTOR_SIZE];
+static unsigned char fileXORBuff[SECTOR_SIZE];
+static unsigned char file4Rebuild[SECTOR_SIZE];
+#endif
 
 char testPLBA[MAX_LBAS][SECTOR_SIZE];
 
@@ -68,7 +79,7 @@ int main(int argc, char *argv[])
 	double totalRate=0.0, aveRate=0.0;
 	struct timeval StartTime, StopTime;
 	unsigned int microsecs;
-int readAmmount;
+int writeAmmount, readAmmount;
 	unsigned char file1Buff[SECTOR_SIZE];
 	unsigned char file2Buff[SECTOR_SIZE];
 	unsigned char file3Buff[SECTOR_SIZE];
@@ -227,7 +238,7 @@ printf("position 2\n");
       //
       //CREATE AND USE FILES FOR RAID
       //
-
+#if 0
       openFiles(fd);
 
 
@@ -238,37 +249,52 @@ printf("position 2\n");
 
    readAmmount=read(fd[0], &file1Buff, SECTOR_SIZE);
    assert(readAmmount == SECTOR_SIZE);
+   writeAmmount=write(fd[1], &file1Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);   
 
    readAmmount=read(fd[0], &file2Buff, SECTOR_SIZE);
    assert(readAmmount == SECTOR_SIZE);
+   writeAmmount=write(fd[2], &file2Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
 
    readAmmount=read(fd[0], &file3Buff, SECTOR_SIZE);
    assert(readAmmount == SECTOR_SIZE);
+   writeAmmount=write(fd[3], &file3Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
 
    readAmmount=read(fd[0], &file4Buff, SECTOR_SIZE);
    assert(readAmmount == SECTOR_SIZE);
-                  
+   writeAmmount=write(fd[4], &file4Buff, SECTOR_SIZE);
+   assert(writeAmmount == SECTOR_SIZE);
 
-#if 1
-//      readInput(file1Buff,
-//	        file2Buff,
-//		file3Buff,
-//		file4Buff,
-//		fd);
+   closeFiles(fd);
+
+
+   openFiles(fd);
+#endif
+
+
+
+
+      readInput(file1Buff,
+	        file2Buff,
+		file3Buff,
+		file4Buff);
+
+      printBuffer((char *)&file1Buff);
+
+
 
       stripeRaidFiles(file1Buff,
                       file2Buff,
                       file3Buff,
-                      file4Buff,
-                      fd);
+                      file4Buff);
 
-
-      closeFiles(fd);
       //END TEST CASE #3
       //
       //
 
-
+#if 0
 
       //
       //TEST CASE #4

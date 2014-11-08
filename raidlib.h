@@ -15,31 +15,26 @@ void closeFiles(int fd[]);
 void readInput(unsigned char *file1Buff,
                unsigned char *file2Buff,
                unsigned char *file3Buff,
-               unsigned char *file4Buff,
-               int fd[]);
+               unsigned char *file4Buff);
 
 
 void stripeRaidFiles(unsigned char *file1Buff,
                      unsigned char *file2Buff,
                      unsigned char *file3Buff,
-                     unsigned char *file4Buff,
-                     int fd[]);
+                     unsigned char *file4Buff);
 
-void writeXOR(unsigned char *fileXORBuff,int fd[]);
+void writeXOR(unsigned char *fileXORBuff);
 
 
 void readRaidFiles(unsigned char *file1Buff,
                    unsigned char *file2Buff,
                    unsigned char *file3Buff,
-                   unsigned char *file4Buff,
-                   unsigned char *fileXORBuff,
-                   int fd[]);
+                   unsigned char *file4Buff);
 
 void writeOutputFile(unsigned char *file1Buff,
                      unsigned char *file2Buff,
                      unsigned char *file3Buff,
-                     unsigned char *file4Buff,
-                     int fd[]);
+                     unsigned char *file4Buff);
 
 
 
