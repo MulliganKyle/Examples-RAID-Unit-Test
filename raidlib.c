@@ -5,9 +5,24 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <string.h>
+
 
 
 #include "raidlib.h"
+
+
+void printBuffer(char *bufferToPrint)
+{
+   int idx;
+
+   for(idx=0; idx < SECTOR_SIZE; idx++)
+   printf("%c ", bufferToPrint[idx]);
+
+   printf("\n");
+}
+		    
+
 
 
 
@@ -112,13 +127,10 @@ void stripeRaidFiles(unsigned char *file1Buff,
 //
 //open raid files
 //
-   fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644);
-   fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644);
-   fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644);
-   fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644);
-
-
-printBuffer((char *)&file1Buff);
+   if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+   if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+   if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+   if( (fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
 
 
 

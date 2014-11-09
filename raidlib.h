@@ -8,6 +8,11 @@
 
 #define SECTOR_SIZE (512)
 
+
+
+void printBuffer(char *bufferToPrint);
+
+
 void openFiles(int fd[]);
 
 void closeFiles(int fd[]);

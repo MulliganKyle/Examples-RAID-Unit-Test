@@ -48,7 +48,7 @@ void modifyBuffer(unsigned char *bufferToModify)
         bufferToModify[idx] = (bufferToModify[idx]+1) % 100;
 }
 
-
+#if 0
 void printBuffer(char *bufferToPrint)
 {
     int idx;
@@ -58,7 +58,7 @@ void printBuffer(char *bufferToPrint)
 
     printf("\n");
 }
-
+#endif
 
 void dumpBuffer(unsigned char *bufferToDump)
 {
