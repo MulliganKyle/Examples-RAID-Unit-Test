@@ -285,10 +285,10 @@ printf("position 2\n");
 
 
 
-      stripeRaidFiles(file1Buff,
-                      file2Buff,
-                      file3Buff,
-                      file4Buff);
+      stripeRaidFiles(&(file1Buff[0]),
+                      &(file2Buff[0]),
+                      &(file3Buff[0]),
+                      &(file4Buff[0]));
 
       //END TEST CASE #3
       //

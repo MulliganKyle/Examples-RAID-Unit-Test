@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
 
 
@@ -132,21 +133,21 @@ void stripeRaidFiles(unsigned char *file1Buff,
    if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
    if( (fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
 
-
+printBuffer((char *) file1Buff);
 
 //
 //write the buffers to the files 1 thru 4
 //
-   writeAmmount=write(fd[0], &file1Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[0], file1Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd[1], &file2Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[1], file2Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
    
-   writeAmmount=write(fd[2], &file3Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[2], file3Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
    
-   writeAmmount=write(fd[3], &file4Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[3], file4Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 //
 //close raid files
