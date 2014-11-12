@@ -102,15 +102,6 @@ void readInput(unsigned char *file1Buff,
      toRead=toRead-readAmmount;
      readSoFar=readSoFar+readAmmount;
    }
-//   readAmmount=read(fd, &file2Buff, SECTOR_SIZE);
-//   assert(readAmmount == SECTOR_SIZE);
-   
-//   readAmmount=read(fd, &file3Buff, SECTOR_SIZE);
-//   assert(readAmmount == SECTOR_SIZE);
-
-//   readAmmount=read(fd, &file4Buff, SECTOR_SIZE);
-//   assert(readAmmount == SECTOR_SIZE);
-
 //
 //close input file
 //
@@ -163,12 +154,12 @@ void writeXOR(unsigned char *fileXORBuff)
 //
 //open XOR file
 //
-   fd= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644);
+   if( (fd= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
 
 //
 //write XOR file
 //
-   writeAmmount=write(fd, &fileXORBuff, SECTOR_SIZE);
+   writeAmmount=write(fd, fileXORBuff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
 //
@@ -180,7 +171,7 @@ void writeXOR(unsigned char *fileXORBuff)
 
 
 //
-//read from the raid files and the XOR file
+//read from the raid files
 //
 void readRaidFiles(unsigned char *file1Buff,
 		   unsigned char *file2Buff,
@@ -188,30 +179,48 @@ void readRaidFiles(unsigned char *file1Buff,
 		   unsigned char *file4Buff)
 {
 
-   int fd[3], idx, readAmmount;
+   int fd[3], idx, readAmmount, readSoFar, toRead;
 
 //
 //open raid files
 //
-   fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644);
-   fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644);
-   fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644);
-   fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644);
+   if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+   if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+   if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+   if( (fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+
+
 
 //
 //read raid files
 //
-   readAmmount=read(fd[0], &file1Buff, SECTOR_SIZE);
-   assert(readAmmount == SECTOR_SIZE);
+   for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
+   {
+      readAmmount=read(fd[0], &file1Buff[readSoFar], toRead);
+      toRead=toRead-readAmmount;
+      readSoFar=readSoFar+readAmmount;
 
-   readAmmount=read(fd[1], &file2Buff, SECTOR_SIZE);
-   assert(readAmmount == SECTOR_SIZE);
+   }
+   for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
+   {
+      readAmmount=read(fd[1], &file2Buff[readSoFar], toRead);
+      toRead=toRead-readAmmount;
+      readSoFar=readSoFar+readAmmount;
+   }
 
-   readAmmount=read(fd[2], &file3Buff, SECTOR_SIZE);
-   assert(readAmmount == SECTOR_SIZE);
+   for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
+   {
+      readAmmount=read(fd[2], &file3Buff[readSoFar], toRead);
+      toRead=toRead-readAmmount;
+      readSoFar=readSoFar+readAmmount;
+   }
 
-   readAmmount=read(fd[3], &file4Buff, SECTOR_SIZE);
-   assert(readAmmount == SECTOR_SIZE);
+   for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
+   {
+      readAmmount=read(fd[3], &file4Buff[readSoFar], toRead);
+      toRead=toRead-readAmmount;
+      readSoFar=readSoFar+readAmmount;
+   }
 
 //
 //close raid files
@@ -230,21 +239,21 @@ void writeOutputFile(unsigned char *file1Buff,
 //
 //open output file
 //
-   fd= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644);
+   if( (fd= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
 
 //
 //write output file
 //
-   writeAmmount=write(fd, &file1Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file1Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd, &file2Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file2Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd, &file3Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file3Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd, &file4Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file4Buff, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
 //
