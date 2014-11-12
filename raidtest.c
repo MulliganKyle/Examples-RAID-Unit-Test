@@ -258,10 +258,10 @@ printf("position 2\n");
       //TEST CASE #4
       //
 
-   readInput(&(file1Buff[0]),
-             &(file2Buff[0]),
-             &(file3Buff[0]),
-             &(file4Buff[0]));
+   readRaidFiles(&(file1Buff[0]),
+                 &(file2Buff[0]),
+                 &(file3Buff[0]),
+	         &(file4Buff[0]));
 
 
    xorLBA(file1Buff,
@@ -272,6 +272,17 @@ printf("position 2\n");
 
    writeXOR(&(fileXORBuff[0]));
 
+   //
+   //END TEST CASE #4
+   //
+
+
+
+
+//
+//TESTCASE #5
+//
+
    rebuildLBA(&(file1Buff[0]),
 	      &(file2Buff[0]),
 	      &(file3Buff[0]),
@@ -279,6 +290,18 @@ printf("position 2\n");
 	      &(file4Rebuild[0]));
 
 
+
+
+//
+//END TEST CASE #5
+//
+
+
+
+
+//
+//TEST CASE #6
+//
    readRaidFiles(&(file1Buff[0]),
                  &(file2Buff[0]),
                  &(file3Buff[0]),
@@ -291,7 +314,7 @@ printf("position 2\n");
                    &(file3Buff[0]),
                    &(file4Buff[0]));
       //
-      //END TEST CASE #4
+      //END TEST CASE #6
       //
 
 
