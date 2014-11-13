@@ -13,10 +13,6 @@
 void printBuffer(char *bufferToPrint);
 
 
-void openFiles(int fd[]);
-
-void closeFiles(int fd[]);
-
 void readInput(unsigned char *file1Buff,
                unsigned char *file2Buff,
                unsigned char *file3Buff,

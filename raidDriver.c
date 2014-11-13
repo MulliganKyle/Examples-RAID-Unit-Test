@@ -16,7 +16,7 @@ if readInput(/*put location of file to be read, in here*/)
 if writeToBuffer(/*put location of file to be written to and the contents of the file being written, in here*/)
     printf("writeToBuffer was successful");
 
-if rebuild(/*location of file being rebuilt, file(s) being used for rebuild, and method being used for rebuild*/)
+if rebuildLBA(/*location of file being rebuilt, file(s) being used for rebuild, and method being used for rebuild*/)
     printf("rebuild was successful");
 
 if readDuringRebuild(/*put location of file to be read, in here*/)
@@ -41,7 +41,7 @@ if (/*computed Iops > required minimum iops*/ 1)
     printf("mirror satisfied performance requirement");
 
 //timer start
-rebuild()
+rebuildLBA()
 //timer stop
 //compute IOPS
 if (/*computed Iops > required minimum iops*/ 1)
