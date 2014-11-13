@@ -12,24 +12,24 @@ Function and Feature Requirements:
 6. Read during rebuild: The file RAID application shall read from files currently under rebuild
 
 Performance Requirements:
-1. Encode operations/second: The system shall Encode XOR files at a minimum of (500K) I/O operations per second
+1. Encode operations/second: The file RAID application shall Encode XOR files at a minimum of (300K) I/O operations per second
 
-2. Rebuild operations/second: The system shall Rebuild missing files at a minimum of (500K) I/O operations per second
+2. Rebuild operations/second: The file RAID application shall Rebuild missing files at a minimum of (300K) I/O operations per second
 
-3. Read time: The system shall read from the files in a maximum of (1ms/sector)
+3. Read time: The file RAID application shall read from the files in a maximum of (1ms/sector)
 
-4. Write time: The system shall write to the buffer in a maximum of (1ms/sector)
+4. Write time: The file RAID application shall write to the buffer in a maximum of (1ms/sector)
 
-5. Read, modify, write penalty: The system’s ‘write buffer’ shall write to the selected file when the buffer reaches a specified capacity or a predetermined amount of time is reached since the last write to file 
+5. Read, modify, write penalty: The file RAID application’s ‘write buffer’ shall write to the selected file when the buffer reaches a specified capacity or a predetermined amount of time is reached since the last write to file 
 
 
 Error Handling, Recovery, Ease of Use Requirements:
-1. Single fault recovery: The system shall recover from a single missing or corrupted file
+1. Single fault recovery: The file RAID application shall recover from a single missing or corrupted file
 
-2. Double fault recovery: The system shall recover from two missing or corrupted files
+2. Double fault recovery: The file RAID application shall recover from two missing or corrupted files
 
-3. Handle write during rebuild: The system shall not allow writing to a file currently being rebuilt
+3. Handle write during rebuild: The file RAID application shall not allow writing to a file currently being rebuilt
 
-4. Data Compare: The system shall do byte by byte Data Compare to ensure rebuilds have been successful
+4. Data Compare: The file RAID application shall do byte by byte Data Compare to ensure rebuilds have been successful
 
-5. (Handling corrupt data, not just missing data): The system shall remove and rebuild a file that is corrupt.
+5. (Handling corrupt data, not just missing data): The file RAID application shall remove and rebuild a file that is corrupt.
