@@ -22,36 +22,7 @@ void printBuffer(char *bufferToPrint)
 
    printf("\n");
 }
-		    
-
-
-
-
-
-//
-// open the files used for RAID
-//
-void openFiles(int fd[])
-{
-   fd[0]= open("raidFileInput.bin", O_RDWR | O_CREAT, 00644);
-   fd[1]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644);
-   fd[2]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644);
-   fd[3]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644);
-   fd[4]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644);
-   fd[5]= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644);
-   fd[6]= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644);
-   fd[7]= open("raidFileReconstruct.bin", O_RDWR | O_CREAT, 00644);
-}
-
-//
-//close the files used for RAID
-//
-void closeFiles(int fd[])
-{
-   int idx;
-   for(idx=0; idx<8;idx++) close(fd[idx]);
-}
-
+	
 
 
 

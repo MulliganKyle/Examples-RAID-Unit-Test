@@ -4,15 +4,15 @@
 //
 //======================================================================================
 
-void XORencode();
+void xorLBA();
 
 void mirror();
 
-void read();
+void readInput();
 
 void writeToBuffer();
 
-void rebuild();
+void rebuildLBA();
 
 void readDuringRebuild();
 

@@ -4,21 +4,21 @@
 //
 //======================================================================================
 
-int XORencode()
+int xorLBA(/* The sectors that will be XOR'ed and the XOR parity sector */)
 {
     printf("This sub system is where the parity of the files will be created");
 //XORencode has completed successfully
     return 1;
 }
 
-int mirror()
+int mirror(/* The sector buffers that are to be written to the file */)
 {
     printf("This sub system is where the mirror of the files including the parity will be created");
 //mirror has completed successfully
     return 1;
 }
 
-int read()
+int readInput(/* The sector buffers for the reads to go */)
 {
     printf("This sub system is where the system will read from the selected file(s)");
 //read has completed successfully
@@ -32,7 +32,7 @@ int writeToBuffer()
     return 1;
 }
 
-int rebuild()
+int rebuildLBA(/* The sector to be rebuilt along with the other sectors */)
 {
     printf("This sub system is where the system will rebuild a missing file");
 //rebuild has completed successfully
