@@ -4,13 +4,13 @@
 
 void main()
 {
-if XORencode(/*put some files in here to create XOR encoded parity*/)
+if xorLBA(/*put some files in here to create XOR encoded parity*/)
     printf("XORencode was successful");
 
 if mirror (/*put some files in here to create mirrored files*/)
     printf("mirror was seuccessful");
 
-if read(/*put location of file to be read, in here*/)
+if readInput(/*put location of file to be read, in here*/)
     printf("read was successful");
 
 if writeToBuffer(/*put location of file to be written to and the contents of the file being written, in here*/)
@@ -27,7 +27,7 @@ if writeBufferToFile(/*no input required because files to be written are in the 
 
 
 //timer start
-XORencode()
+xorLBA()
 //timer stop
 //compute IOPS
 if (/*computed Iops > required minimum iops*/ 1)
@@ -48,7 +48,7 @@ if (/*computed Iops > required minimum iops*/ 1)
     printf("rebuild satisfied performance requirement");
 
 //timer start
-read()
+readInput()
 //timer stop
 //compute elapsed time
 if (/*computed elapsed time < required maximum time*/ 1)
