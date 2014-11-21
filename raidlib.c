@@ -146,11 +146,8 @@ void stripeRaidFiles(unsigned char *file1BuffPtr,
    
    writeAmmount=write(fd[2], file3BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
-   //printf("[]\n");
-  // printBuffer((char*) file3BuffPtr);
-  //printBuffer((char*) file4BuffPtr); 
+   
    writeAmmount=write(fd[3], file4BuffPtr, SECTOR_SIZE);
-   if(writeAmmount<0) printf("\n%d\n, %s\n",errno, strerror(errno));
    assert(writeAmmount == SECTOR_SIZE);
 //
 //close raid files
@@ -191,7 +188,7 @@ void readRaidFiles(unsigned char *file1BuffPtr,
 		   unsigned char *file4BuffPtr)
 {
 
-   static int fd[3];
+   static int fd[4];
    int idx, readAmmount, readSoFar, toRead;
 
 //
