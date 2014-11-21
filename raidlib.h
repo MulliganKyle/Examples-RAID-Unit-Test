@@ -36,7 +36,8 @@ void readRaidFiles(unsigned char *file1Buff,
 void writeOutputFile(unsigned char *file1Buff,
                      unsigned char *file2Buff,
                      unsigned char *file3Buff,
-                     unsigned char *file4Buff);
+                     unsigned char *file4Buff,
+		     int EOFfound);
 
 
 
