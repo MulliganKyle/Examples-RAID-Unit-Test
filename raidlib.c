@@ -165,7 +165,7 @@ void writeXOR(unsigned char *fileXORBuff)
    int fd, writeAmmount;
 //
 //open XOR file
-//
+
    if( (fd= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
 
 //
@@ -245,7 +245,8 @@ void readRaidFiles(unsigned char *file1BuffPtr,
 void writeOutputFile(unsigned char *file1BuffPtr,
                      unsigned char *file2BuffPtr,
                      unsigned char *file3BuffPtr,
-                     unsigned char *file4BuffPtr)
+                     unsigned char *file4BuffPtr,
+		     int EOFfound)
 {
    static int fd;
    int writeAmmount;
@@ -273,7 +274,7 @@ void writeOutputFile(unsigned char *file1BuffPtr,
 //
 //close output file
 //
-   close(fd);
+	if(EOFfound) close(fd);
 
 }
 
