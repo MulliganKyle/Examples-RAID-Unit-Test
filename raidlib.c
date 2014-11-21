@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-
+#include <errno.h>
 
 #include "raidlib.h"
 
@@ -18,7 +18,7 @@ void printBuffer(char *bufferToPrint)
    int idx;
 
    for(idx=0; idx < SECTOR_SIZE; idx++)
-   printf("%c ", bufferToPrint[idx]);
+   printf("%x ", bufferToPrint[idx]);
 
    printf("\n");
 }
@@ -29,18 +29,22 @@ void printBuffer(char *bufferToPrint)
 //
 //read the input file and stripe across 4 files
 //
-void readInput(unsigned char *file1Buff,
+int  readInput(unsigned char *file1Buff,
 	       unsigned char *file2Buff,
 	       unsigned char *file3Buff,
       	       unsigned char *file4Buff)
 {
-   int fd, readAmmount, readSoFar, toRead;
+  static int fd, first=1;
+  int readAmmount, readSoFar, toRead;
 
 //
 //open input file
 //
-   if( (fd= open("raidFileInput.bin", O_RDWR | O_CREAT, 00644))<0)  perror("open");
-
+   if( first)
+   {
+      if( (fd= open("raidFileInput.bin", O_RDWR | O_CREAT, 00644))<0)  perror("open");
+      first=0;
+   }
 
 //
 //read one sector at a time from the input file into buffers
@@ -49,72 +53,109 @@ void readInput(unsigned char *file1Buff,
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
       readAmmount=read(fd, &file1Buff[readSoFar], toRead);
-      toRead=toRead-readAmmount;
-      readSoFar=readSoFar+readAmmount;
+      if( readAmmount==0)
+      {
+	 close(fd);
+	 return 1;
+      }
+      else
+      {
+	 toRead=toRead-readAmmount;
+         readSoFar=readSoFar+readAmmount;
+      }
 
    }
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
       readAmmount=read(fd, &file2Buff[readSoFar], toRead);
-      toRead=toRead-readAmmount;
-      readSoFar=readSoFar+readAmmount;
+      if( readAmmount==0)
+      {
+	 close(fd);
+	 return 1;
+      }
+      else
+      {
+	 toRead=toRead-readAmmount;
+	 readSoFar=readSoFar+readAmmount;
+      }
    }
 
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
       readAmmount=read(fd, &file3Buff[readSoFar], toRead);
-      toRead=toRead-readAmmount;
-      readSoFar=readSoFar+readAmmount;
+      if( readAmmount==0)
+      {
+	 close(fd);
+	 return 1;
+      }
+      else
+      {
+	 toRead=toRead-readAmmount;
+	 readSoFar=readSoFar+readAmmount;
+      }
    }
 
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
-     readAmmount=read(fd, &file4Buff[readSoFar], toRead);
-     toRead=toRead-readAmmount;
-     readSoFar=readSoFar+readAmmount;
+      readAmmount=read(fd, &file4Buff[readSoFar], toRead);
+      if( readAmmount==0)
+      {
+	 close(fd);
+	 return 1;
+      }
+      else
+      {
+	 toRead=toRead-readAmmount;
+	 readSoFar=readSoFar+readAmmount;
+      }
    }
-//
-//close input file
-//
-   close(fd);
+   return 0;
+
 }
 
-void stripeRaidFiles(unsigned char *file1Buff,
-		     unsigned char *file2Buff,
-		     unsigned char *file3Buff,
-		     unsigned char *file4Buff)
+void stripeRaidFiles(unsigned char *file1BuffPtr,
+		     unsigned char *file2BuffPtr,
+		     unsigned char *file3BuffPtr,
+		     unsigned char *file4BuffPtr,
+		     int EOFfound)
 {
 
-   int fd[3], writeAmmount, idx;
+   static int fd[4], first=1;
+   int writeAmmount, idx;
 
 //
 //open raid files
 //
-   if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
-   if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
-   if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
-   if( (fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
-
-printBuffer((char *) file1Buff);
+   if(first)
+   {
+      if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
 
 //
 //write the buffers to the files 1 thru 4
 //
-   writeAmmount=write(fd[0], file1Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[0], file1BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd[1], file2Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[1], file2BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
    
-   writeAmmount=write(fd[2], file3Buff, SECTOR_SIZE);
+   writeAmmount=write(fd[2], file3BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
-   
-   writeAmmount=write(fd[3], file4Buff, SECTOR_SIZE);
+   //printf("[]\n");
+  // printBuffer((char*) file3BuffPtr);
+  //printBuffer((char*) file4BuffPtr); 
+   writeAmmount=write(fd[3], file4BuffPtr, SECTOR_SIZE);
+   if(writeAmmount<0) printf("\n%d\n, %s\n",errno, strerror(errno));
    assert(writeAmmount == SECTOR_SIZE);
 //
 //close raid files
 //
-   for(idx=0; idx<3;idx++) close(fd[idx]);
+   if(EOFfound) for(idx=0; idx<3;idx++) close(fd[idx]);
    
 }
 
@@ -144,13 +185,14 @@ void writeXOR(unsigned char *fileXORBuff)
 //
 //read from the raid files
 //
-void readRaidFiles(unsigned char *file1Buff,
-		   unsigned char *file2Buff,
-		   unsigned char *file3Buff,
-		   unsigned char *file4Buff)
+void readRaidFiles(unsigned char *file1BuffPtr,
+		   unsigned char *file2BuffPtr,
+		   unsigned char *file3BuffPtr,
+		   unsigned char *file4BuffPtr)
 {
 
-   int fd[3], idx, readAmmount, readSoFar, toRead;
+   static int fd[3];
+   int idx, readAmmount, readSoFar, toRead;
 
 //
 //open raid files
@@ -167,28 +209,28 @@ void readRaidFiles(unsigned char *file1Buff,
 //
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
-      readAmmount=read(fd[0], &file1Buff[readSoFar], toRead);
+      readAmmount=read(fd[0], &file1BuffPtr[readSoFar], toRead);
       toRead=toRead-readAmmount;
       readSoFar=readSoFar+readAmmount;
 
    }
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
-      readAmmount=read(fd[1], &file2Buff[readSoFar], toRead);
+      readAmmount=read(fd[1], &file2BuffPtr[readSoFar], toRead);
       toRead=toRead-readAmmount;
       readSoFar=readSoFar+readAmmount;
    }
 
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
-      readAmmount=read(fd[2], &file3Buff[readSoFar], toRead);
+      readAmmount=read(fd[2], &file3BuffPtr[readSoFar], toRead);
       toRead=toRead-readAmmount;
       readSoFar=readSoFar+readAmmount;
    }
 
    for( readAmmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
    {
-      readAmmount=read(fd[3], &file4Buff[readSoFar], toRead);
+      readAmmount=read(fd[3], &file4BuffPtr[readSoFar], toRead);
       toRead=toRead-readAmmount;
       readSoFar=readSoFar+readAmmount;
    }
@@ -200,12 +242,13 @@ void readRaidFiles(unsigned char *file1Buff,
 
 }	   
 
-void writeOutputFile(unsigned char *file1Buff,
-                     unsigned char *file2Buff,
-                     unsigned char *file3Buff,
-                     unsigned char *file4Buff)
+void writeOutputFile(unsigned char *file1BuffPtr,
+                     unsigned char *file2BuffPtr,
+                     unsigned char *file3BuffPtr,
+                     unsigned char *file4BuffPtr)
 {
-   int fd, writeAmmount;
+   static int fd;
+   int writeAmmount;
 
 //
 //open output file
@@ -215,16 +258,16 @@ void writeOutputFile(unsigned char *file1Buff,
 //
 //write output file
 //
-   writeAmmount=write(fd, file1Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file1BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd, file2Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file2BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd, file3Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file3BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
-   writeAmmount=write(fd, file4Buff, SECTOR_SIZE);
+   writeAmmount=write(fd, file4BuffPtr, SECTOR_SIZE);
    assert(writeAmmount == SECTOR_SIZE);
 
 //

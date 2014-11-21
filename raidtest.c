@@ -74,7 +74,7 @@ void dumpBuffer(unsigned char *bufferToDump)
 
 int main(int argc, char *argv[])
 {
-	int idx, LBAidx, numTestIterations, rc, fd[7];
+	int idx, LBAidx, numTestIterations, rc, fd[7], EOFfound;
 	double rate=0.0;
 	double totalRate=0.0, aveRate=0.0;
 	struct timeval StartTime, StopTime;
@@ -237,22 +237,30 @@ printf("position 2\n");
       //
       //CREATE AND USE FILES FOR RAID
       //
+      for(EOFfound=0;!EOFfound;)
+      {
+	 EOFfound=readInput(&(file1Buff[0]),
+			    &(file2Buff[0]),
+			    &(file3Buff[0]),
+			    &(file4Buff[0]));
 
-      readInput(&(file1Buff[0]),
-	        &(file2Buff[0]),
-		&(file3Buff[0]),
-		&(file4Buff[0]));
 
-
-      stripeRaidFiles(&(file1Buff[0]),
-                      &(file2Buff[0]),
-                      &(file3Buff[0]),
-                      &(file4Buff[0]));
+	 stripeRaidFiles(&(file1Buff[0]),
+	                 &(file2Buff[0]),
+	                 &(file3Buff[0]),
+	                 &(file4Buff[0]),
+			 EOFfound);
+	 
+	 memset(file1Buff,0, sizeof(file1Buff));
+	 memset(file2Buff,0, sizeof(file2Buff));
+	 memset(file3Buff,0, sizeof(file3Buff));
+	 memset(file4Buff,0, sizeof(file4Buff));
+      }
 
       //END TEST CASE #3
       //
       //
-
+#if 0
 
       //
       //TEST CASE #4
@@ -317,7 +325,7 @@ printf("position 2\n");
       //END TEST CASE #6
       //
 
-
+#endif
 
 
 

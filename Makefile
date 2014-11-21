@@ -17,7 +17,7 @@ OBJS= ${CFILES:.c=.o}
 all:	${DRIVER}
 
 clean:
-	-rm -f *.o *.NEW *~
+	-rm -f *.o *.NEW *.bin *~
 	-rm -f ${DRIVER} ${DERIVED} ${GARBAGE}
 
 ${DRIVER}:	${OBJS}

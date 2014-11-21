@@ -13,7 +13,7 @@
 void printBuffer(char *bufferToPrint);
 
 
-void readInput(unsigned char *file1Buff,
+int  readInput(unsigned char *file1Buff,
                unsigned char *file2Buff,
                unsigned char *file3Buff,
                unsigned char *file4Buff);
@@ -22,7 +22,8 @@ void readInput(unsigned char *file1Buff,
 void stripeRaidFiles(unsigned char *file1Buff,
                      unsigned char *file2Buff,
                      unsigned char *file3Buff,
-                     unsigned char *file4Buff);
+                     unsigned char *file4Buff,
+		     int EOFfound);
 
 void writeXOR(unsigned char *fileXORBuff);
 
