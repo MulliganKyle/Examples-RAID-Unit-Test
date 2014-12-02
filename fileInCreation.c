@@ -26,6 +26,8 @@ int main()
    write(fileDescriptor, &testLBA[0], SECTOR_SIZE);
    write(fileDescriptor, &testLBA[0], SECTOR_SIZE);
    write(fileDescriptor, &testLBA[0], SECTOR_SIZE);
+   write(fileDescriptor, &testLBA[0], SECTOR_SIZE);
+   write(fileDescriptor, &testLBA[0], (SECTOR_SIZE/2));
    close(fileDescriptor);
 
 

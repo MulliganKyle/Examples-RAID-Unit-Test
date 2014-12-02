@@ -11,64 +11,43 @@
 int main(int argc, char *argv[])
 {
 
-	int fd[7], EOFfound;
+	int amountRead;
 	
-	unsigned char file1Buff[SECTOR_SIZE];
-	unsigned char file2Buff[SECTOR_SIZE];
-	unsigned char file3Buff[SECTOR_SIZE];
-	unsigned char file4Buff[SECTOR_SIZE];
-	unsigned char fileXORBuff[SECTOR_SIZE];
-	unsigned char file4Rebuild[SECTOR_SIZE];
+	unsigned char fileBuff[SECTOR_SIZE];
 
 	//
 	//TEST CASE 3
 	//CREATE AND USE FILES FOR RAID
 	
-	for(EOFfound=0;!EOFfound;)
+	for(amountRead=SECTOR_SIZE; amountRead==SECTOR_SIZE;)
 	{
-		EOFfound=readInput(&(file1Buff[0]),
-				   &(file2Buff[0]),
-				   &(file3Buff[0]),
-				   &(file4Buff[0]));
+		amountRead=readInput(&(fileBuff[0]));
 
-		stripeRaidFiles(&(file1Buff[0]),
-                                &(file2Buff[0]),
-                                &(file3Buff[0]),
-                                &(file4Buff[0]),
-				EOFfound);
+		stripeRaidFiles(&(fileBuff[0]),
+				amountRead);
 
 
-		memset(file1Buff, 0, sizeof(file1Buff));
-		memset(file2Buff, 0, sizeof(file2Buff));
-		memset(file3Buff, 0, sizeof(file3Buff));
-		memset(file4Buff, 0, sizeof(file4Buff));
+		memset(fileBuff, 0, sizeof(fileBuff));
+
+		// Consider alternating 1s and 0s instead of 0s for lower probability
 	}
 
 	//
 	//END TEST CASE 3
-	
-#if 0
+
+
+
 	//TEST CASE 4
 	//OUTPUT STRIPED FILES
 
-	for(EOFfound=0;!EOFfound;)
+	for(amountRead=SECTOR_SIZE; amountRead==SECTOR_SIZE;)
         {
-                EOFfound=readInput(&(file1Buff[0]),
-                                   &(file2Buff[0]),
-                                   &(file3Buff[0]),
-                                   &(file4Buff[0]));
+                amountRead=readRaidFiles(&(fileBuff[0]));
 
-                writeOutputFile(&(file1Buff[0]),
-                                &(file2Buff[0]),
-                                &(file3Buff[0]),
-                                &(file4Buff[0]),
-                                EOFfound);
+                writeOutputFile(&(fileBuff[0]),
+                                amountRead);
 
 
-                memset(file1Buff, 0, sizeof(file1Buff));
-                memset(file2Buff, 0, sizeof(file2Buff));
-                memset(file3Buff, 0, sizeof(file3Buff));
-                memset(file4Buff, 0, sizeof(file4Buff));
+                memset(fileBuff, 0, sizeof(fileBuff));
         }
-#endif 
 }
