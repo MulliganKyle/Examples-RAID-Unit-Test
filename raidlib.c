@@ -41,7 +41,7 @@ int  readInput(unsigned char *fileBuff)
 //
    if( first)
    {
-      if( (fd= open("raidFileInput.bin", O_RDWR | O_CREAT, 00644))<0)  perror("open");
+      if( (fd= open("Baby-Musk-Ox.ppm", O_RDWR | O_CREAT, 00644))<0)  perror("open");
       first=0;
    }
 
@@ -89,31 +89,48 @@ void stripeRaidFiles(unsigned char *fileBuffPtr,
 //write the buffers to the files 1 thru 4
 //
 
-   writeAmount=write(fd[idx1], fileBuffPtr, amountToWrite);
-   assert(writeAmount == amountToWrite);
+   writeAmount=write(fd[idx1], fileBuffPtr, SECTOR_SIZE);
+   assert(writeAmount == SECTOR_SIZE);
    idx1= (idx1+1)%4;
-   if(amountToWrite < SECTOR_SIZE) for(idx=0;idx<3;idx++) close(fd[idx]);
+   if(amountToWrite < SECTOR_SIZE)
+   {
+      memset(fileBuffPtr, 0, SECTOR_SIZE);
+
+      for(;idx1!=0 && idx1<4;idx1++)
+      {
+	 writeAmount=write(fd[idx1], fileBuffPtr, SECTOR_SIZE);
+	 assert(writeAmount == SECTOR_SIZE);
+      }
+      for(idx=0;idx<3;idx++) close(fd[idx]);
+   }   
 }
 
 
-void writeXOR(unsigned char *fileXORBuff)
+void writeXOR(unsigned char *fileXORBuff,
+	      int EOFfound)
 {
-   int fd, writeAmount;
+   static int fd, first=1;
+   int writeAmount;
 //
 //open XOR file
-
-   if( (fd= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
-
+   if(first)
+   {
+      if( (fd= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
 //
 //write XOR file
 //
-   writeAmount=write(fd, fileXORBuff, SECTOR_SIZE);
-   assert(writeAmount == SECTOR_SIZE);
+   if(!EOFfound)
+   {
+      writeAmount=write(fd, fileXORBuff, SECTOR_SIZE);
+      assert(writeAmount == SECTOR_SIZE);
+   }
 
 //
 //close XOR file
 //
-   close(fd);
+   if(EOFfound) close(fd);
 
 }
 
@@ -173,7 +190,7 @@ void writeOutputFile(unsigned char *fileBuffPtr,
 //
    if(first)
    {
-      if( (fd= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd= open("Baby-Musk-Ox-Out.ppm", O_RDWR | O_CREAT, 00644))<0) perror("open");
       first=0;
    }
 //
@@ -186,6 +203,129 @@ void writeOutputFile(unsigned char *fileBuffPtr,
 
 }
 
+int createXORStripe(unsigned char *fileBuffPtr)
+{
+   static int fd[4], first=1;
+   int readAmount, idx, EOFfound=0;
+   unsigned char XORBuff1[SECTOR_SIZE];
+   unsigned char XORBuff2[SECTOR_SIZE];
+   unsigned char XORBuff3[SECTOR_SIZE];
+   unsigned char XORBuff4[SECTOR_SIZE];
+
+   memset(XORBuff1, 0, sizeof(XORBuff1));
+   memset(XORBuff2, 0, sizeof(XORBuff2));
+   memset(XORBuff3, 0, sizeof(XORBuff3));
+   memset(XORBuff4, 0, sizeof(XORBuff4));
+
+   if(first)
+   {
+      if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[3]= open("raidFile4.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
+
+   readAmount=read(fd[0], &XORBuff1[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;
+   
+   readAmount=read(fd[1], &XORBuff2[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;
+   
+   readAmount=read(fd[2], &XORBuff3[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;  
+   
+   readAmount=read(fd[3], &XORBuff4[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;
+   
+   
+   for(idx=0; idx<SECTOR_SIZE; idx++)
+   {
+      *(fileBuffPtr+idx)=(XORBuff1[idx])^(XORBuff2[idx])^(XORBuff3[idx])^(XORBuff4[idx]);
+   }
+   
+   if(EOFfound) return 1;
+   else return 0;
+
+}
+
+int rebuildRaidStripe(unsigned char *fileBuffPtr)
+{
+   static int fd[4], first=1;
+   int readAmount, idx, EOFfound=0;
+   unsigned char XORBuff1[SECTOR_SIZE];
+   unsigned char XORBuff2[SECTOR_SIZE];
+   unsigned char XORBuff3[SECTOR_SIZE];
+   unsigned char parityBuff[SECTOR_SIZE];
+   unsigned char parityCheck;
+
+   memset(XORBuff1, 0, sizeof(XORBuff1));
+   memset(XORBuff2, 0, sizeof(XORBuff2));
+   memset(XORBuff3, 0, sizeof(XORBuff3));
+   memset(parityBuff, 0, sizeof(parityBuff));
+
+   if(first)
+   {
+      if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[3]= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
+
+   readAmount=read(fd[0], &XORBuff1[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;
+   
+   readAmount=read(fd[1], &XORBuff2[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;
+   
+   readAmount=read(fd[2], &XORBuff3[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;  
+   
+   readAmount=read(fd[3], &parityBuff[0], SECTOR_SIZE);
+   if(readAmount<SECTOR_SIZE) EOFfound=1;
+   
+   
+   for(idx=0; idx<SECTOR_SIZE; idx++)
+   {
+      parityCheck=(XORBuff1[idx])^(XORBuff2[idx])^(XORBuff3[idx]);
+      *(fileBuffPtr+idx)=(parityBuff[idx])^(parityCheck);
+
+   }
+   
+   if(EOFfound) return 1;
+   else return 0;
+
+}
+
+void rebuildRaidFile(unsigned char *fileXORBuff,
+	      int EOFfound)
+{
+   static int fd, first=1;
+   int writeAmount;
+//
+//open rebuilt file
+   if(first)
+   {
+      if( (fd= open("raidFileRebuilt.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
+//
+//write rebuilt file
+//
+   if(!EOFfound)
+   {
+      writeAmount=write(fd, fileXORBuff, SECTOR_SIZE);
+      assert(writeAmount == SECTOR_SIZE);
+   }
+
+
+//
+//close rebuilt file
+//
+   if(EOFfound) close(fd);
+
+}
 
 
 

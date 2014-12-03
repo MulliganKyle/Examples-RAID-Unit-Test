@@ -19,7 +19,8 @@ int  readInput(unsigned char *fileBuff);
 void stripeRaidFiles(unsigned char *fileBuff,
 		     int amountToWrite);
 
-void writeXOR(unsigned char *fileXORBuff);
+void writeXOR(unsigned char *fileXORBuff,
+	      int EOFfound);
 
 
 int  readRaidFiles(unsigned char *fileBuff);
@@ -27,7 +28,12 @@ int  readRaidFiles(unsigned char *fileBuff);
 void writeOutputFile(unsigned char *fileBuff,
 		     int amountToWrite);
 
+int createXORStripe(unsigned char *fileBuff);
 
+int rebuildRaidStripe(unsigned char *fileBuff);
+
+void rebuildRaidFile(unsigned char *fileBuff,
+		     int EOFfound);
 
 
 
