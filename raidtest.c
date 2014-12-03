@@ -15,21 +15,40 @@ int main(int argc, char *argv[])
 	
 	unsigned char fileBuff[SECTOR_SIZE];
 
+
+   if(argc<2)
+   {
+      printf("ERROR usage of this program requires a file to be input. EX: raidtest Baby-Musk-Ox.ppm\n");
+      return -1;
+   }
+   else
+   {
+      printf("will use %s for raidimplementation.\n", argv[1]);
+   }
+
+
+
+
 	//
 	//TEST CASE 3
 	//CREATE AND USE FILES FOR RAID
 	
 	for(amountRead=SECTOR_SIZE; amountRead==SECTOR_SIZE;)
 	{
-		amountRead=readInput(&(fileBuff[0]));
+		amountRead=readInput(&(fileBuff[0]),
+				     argv[1]);
 
 		stripeRaidFiles(&(fileBuff[0]),
 				amountRead);
-
+	       
+	       //
+	       //adds one to the sectors read in only if a full sector was read.
 	       if(amountRead==SECTOR_SIZE)
 	       {
 		  sectorsReadIn++;
 	       }
+	       //
+	       //saves the extra amount of bytes that were read after the last full sector
 	       else
 	       {
 		  extraBytesToRead=amountRead;
@@ -55,6 +74,9 @@ int main(int argc, char *argv[])
                 writeOutputFile(&(fileBuff[0]),
                                 amountRead);
 	       sectorsReadOut++;
+
+	       //
+	       //reads and writes the extra bytes after the last full sector that needs to be read
 	       if(sectorsReadOut==sectorsReadIn)
 	       {
 		  readRaidFiles(&(fileBuff[0]));
@@ -104,6 +126,9 @@ int main(int argc, char *argv[])
                 writeRebuiltOutputFile(&(fileBuff[0]),
                                 amountRead);
 	       sectorsReadOut++;
+
+	       //
+	       //reads and writes the extra bytes after the last full sector that needs to be read
 	       if(sectorsReadOut==sectorsReadIn)
 	       {
 		  readRebuiltRaidFiles(&(fileBuff[0]));
@@ -113,6 +138,8 @@ int main(int argc, char *argv[])
 
                 memset(fileBuff, 0, sizeof(fileBuff));
         }
+	//
+	//END TEST CASE 6
 
 
 

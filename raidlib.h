@@ -13,7 +13,8 @@
 void printBuffer(char *bufferToPrint);
 
 
-int  readInput(unsigned char *fileBuff);
+int  readInput(unsigned char *fileBuff,
+	       char *inputFile);
 
 
 void stripeRaidFiles(unsigned char *fileBuff,

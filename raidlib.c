@@ -31,7 +31,8 @@ void printBuffer(char *bufferToPrint)
 //
 //read the input file and stripe across 4 files
 //
-int  readInput(unsigned char *fileBuff)
+int  readInput(unsigned char *fileBuff,
+	       char *inputFile)
 {
   static int fd, first=1;
   int readAmount, readSoFar, toRead;
@@ -41,7 +42,7 @@ int  readInput(unsigned char *fileBuff)
 //
    if( first)
    {
-      if( (fd= open("Baby-Musk-Ox.ppm", O_RDWR | O_CREAT, 00644))<0)  perror("open");
+      if( (fd= open(inputFile, O_RDWR | O_CREAT, 00644))<0)  perror("open");
       first=0;
    }
 
@@ -120,7 +121,9 @@ void writeXOR(unsigned char *fileXORBuff,
    }
 //
 //write XOR file
-//
+//as long as EOF has not been found. 
+//note, nothing extra needs to be written since EOF will always
+//be on a sector boundary
    if(!EOFfound)
    {
       writeAmount=write(fd, fileXORBuff, SECTOR_SIZE);
@@ -190,7 +193,7 @@ void writeOutputFile(unsigned char *fileBuffPtr,
 //
    if(first)
    {
-      if( (fd= open("Baby-Musk-Ox-Out.ppm", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd= open("raidFileOutput.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
       first=0;
    }
 //
@@ -317,6 +320,10 @@ void rebuildRaidFile(unsigned char *fileXORBuff,
    }
 //
 //write rebuilt file
+//only if EOF has not been found
+//note nothing needs to be written after EOF
+//has been found since EOF will always be on
+//a sector boundary.
 //
    if(!EOFfound)
    {
@@ -384,7 +391,7 @@ void writeRebuiltOutputFile(unsigned char *fileBuffPtr,
 //
    if(first)
    {
-      if( (fd= open("Baby-Musk-Ox-Out-Rebuilt.ppm", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd= open("raidFileOutputRebuilt.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
       first=0;
    }
 //
