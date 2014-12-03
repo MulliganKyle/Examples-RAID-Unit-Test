@@ -35,7 +35,10 @@ int rebuildRaidStripe(unsigned char *fileBuff);
 void rebuildRaidFile(unsigned char *fileBuff,
 		     int EOFfound);
 
+int readRebuiltRaidFiles(unsigned char *fileBuff);
 
+void writeRebuiltOutputFile(unsigned char *fileBuff,
+			    int amountToWrite);
 
 void xorLBA(unsigned char *LBA1,
 	    unsigned char *LBA2,

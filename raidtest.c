@@ -65,7 +65,6 @@ int main(int argc, char *argv[])
                 memset(fileBuff, 0, sizeof(fileBuff));
         }
 
-#if 1
 	 //TEST CASE 5
 	 //XOR STRIPED FILES
 	 for(EOFfound=0; !EOFfound;)
@@ -95,8 +94,25 @@ int main(int argc, char *argv[])
 	 //
 	 //END TEST CASE 6
 
-#endif
 
+	 //TEST CASE 7
+	 //CREATE OUTPUT FILE USING REBUILT FILE 4
+	 for(sectorsReadOut=0; sectorsReadOut<sectorsReadIn;)
+	 {
+		amountRead=readRebuiltRaidFiles(&(fileBuff[0]));
+
+                writeRebuiltOutputFile(&(fileBuff[0]),
+                                amountRead);
+	       sectorsReadOut++;
+	       if(sectorsReadOut==sectorsReadIn)
+	       {
+		  readRebuiltRaidFiles(&(fileBuff[0]));
+		  writeRebuiltOutputFile(&(fileBuff[0]),
+				         extraBytesToRead);
+	       }
+
+                memset(fileBuff, 0, sizeof(fileBuff));
+        }
 
 
 

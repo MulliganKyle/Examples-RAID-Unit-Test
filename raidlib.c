@@ -298,6 +298,11 @@ int rebuildRaidStripe(unsigned char *fileBuffPtr)
 
 }
 
+
+
+//
+//READ FROM RAID FILES AND REBUILT FILE
+//
 void rebuildRaidFile(unsigned char *fileXORBuff,
 	      int EOFfound)
 {
@@ -327,6 +332,70 @@ void rebuildRaidFile(unsigned char *fileXORBuff,
 
 }
 
+int readRebuiltRaidFiles(unsigned char *fileBuffPtr)
+{
+
+   static int fd[4], first=1, idx1=0;
+   int idx, readAmount, readSoFar, toRead;
+
+//
+//open raid files
+//
+   if(first)
+   {
+      if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[1]= open("raidFile2.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[2]= open("raidFile3.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      if( (fd[3]= open("raidFileRebuilt.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
+
+
+//
+//read raid files
+//
+
+   for(readAmount=0, readSoFar=0, toRead=SECTOR_SIZE; readSoFar<SECTOR_SIZE;)
+   {
+      readAmount=read(fd[idx1], &fileBuffPtr[readSoFar], toRead);
+      if( readAmount==0)
+      {
+	 for(idx=0; idx<4; idx++) close(fd[idx]);
+	 return readSoFar;
+      }
+      else
+      {
+	 toRead=toRead-readAmount;
+	 readSoFar=readSoFar+readAmount;
+      }
+   }
+   idx1=(idx1+1)%4;
+   return readSoFar;
+}	   
+
+void writeRebuiltOutputFile(unsigned char *fileBuffPtr,
+			   int amountToWrite)
+{
+   static int fd, first=1;
+   int writeAmount;
+
+//
+//open output file
+//
+   if(first)
+   {
+      if( (fd= open("Baby-Musk-Ox-Out-Rebuilt.ppm", O_RDWR | O_CREAT, 00644))<0) perror("open");
+      first=0;
+   }
+//
+//write output file
+//
+
+   writeAmount=write(fd, fileBuffPtr, amountToWrite);
+   assert(writeAmount == amountToWrite);
+   if(amountToWrite < SECTOR_SIZE) close(fd);
+
+}
 
 
 
