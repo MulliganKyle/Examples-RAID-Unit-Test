@@ -38,7 +38,7 @@ int  readInput(unsigned char *fileBuff,
   int readAmount, readSoFar, toRead;
 
 //
-//open input file
+//open input file on first entry into the function
 //
    if( first)
    {
@@ -75,7 +75,7 @@ void stripeRaidFiles(unsigned char *fileBuffPtr,
    int writeAmount, idx;
 
 //
-//open raid files
+//open raid files on first entry into the function
 //
    if(first)
    {
@@ -93,6 +93,10 @@ void stripeRaidFiles(unsigned char *fileBuffPtr,
    writeAmount=write(fd[idx1], fileBuffPtr, SECTOR_SIZE);
    assert(writeAmount == SECTOR_SIZE);
    idx1= (idx1+1)%4;
+
+   //
+   //This if statement will fill the rest of a stripe with 0's
+   //once the whole input file has been written into the raid files.
    if(amountToWrite < SECTOR_SIZE)
    {
       memset(fileBuffPtr, 0, SECTOR_SIZE);
@@ -113,7 +117,7 @@ void writeXOR(unsigned char *fileXORBuff,
    static int fd, first=1;
    int writeAmount;
 //
-//open XOR file
+//open XOR file on first entry into the function
    if(first)
    {
       if( (fd= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
@@ -148,7 +152,7 @@ int readRaidFiles(unsigned char *fileBuffPtr)
    int idx, readAmount, readSoFar, toRead;
 
 //
-//open raid files
+//open raid files on first entry into the function
 //
    if(first)
    {
@@ -189,7 +193,7 @@ void writeOutputFile(unsigned char *fileBuffPtr,
    int writeAmount;
 
 //
-//open output file
+//open output file on first entry into the function
 //
    if(first)
    {
@@ -267,6 +271,9 @@ int rebuildRaidStripe(unsigned char *fileBuffPtr)
    memset(XORBuff3, 0, sizeof(XORBuff3));
    memset(parityBuff, 0, sizeof(parityBuff));
 
+
+//
+//open raid files and XOR file on first entry into the function
    if(first)
    {
       if( (fd[0]= open("raidFile1.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
@@ -275,7 +282,8 @@ int rebuildRaidStripe(unsigned char *fileBuffPtr)
       if( (fd[3]= open("raidFileXOR.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
       first=0;
    }
-
+//
+//read one stripe from each raid file and from the XOR file
    readAmount=read(fd[0], &XORBuff1[0], SECTOR_SIZE);
    if(readAmount<SECTOR_SIZE) EOFfound=1;
    
@@ -288,7 +296,8 @@ int rebuildRaidStripe(unsigned char *fileBuffPtr)
    readAmount=read(fd[3], &parityBuff[0], SECTOR_SIZE);
    if(readAmount<SECTOR_SIZE) EOFfound=1;
    
-   
+   //
+   //rebuild the fourth raid file using XOR 
    for(idx=0; idx<SECTOR_SIZE; idx++)
    {
       parityCheck=(XORBuff1[idx])^(XORBuff2[idx])^(XORBuff3[idx]);
@@ -312,7 +321,7 @@ void rebuildRaidFile(unsigned char *fileXORBuff,
    static int fd, first=1;
    int writeAmount;
 //
-//open rebuilt file
+//open rebuilt file on first entry into the function
    if(first)
    {
       if( (fd= open("raidFileRebuilt.bin", O_RDWR | O_CREAT, 00644))<0) perror("open");
@@ -346,7 +355,7 @@ int readRebuiltRaidFiles(unsigned char *fileBuffPtr)
    int idx, readAmount, readSoFar, toRead;
 
 //
-//open raid files
+//open raid files on first entry into the function
 //
    if(first)
    {
@@ -387,7 +396,7 @@ void writeRebuiltOutputFile(unsigned char *fileBuffPtr,
    int writeAmount;
 
 //
-//open output file
+//open output file on first entry into the function
 //
    if(first)
    {
